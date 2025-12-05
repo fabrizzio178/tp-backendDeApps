@@ -1,0 +1,133 @@
+server:
+  port: 8087 # Gateway port
+
+spring:
+  application:
+    name: gateway
+  datasource:
+    url: jdbc:postgresql://logistica-db:5432/logistica?currentSchema=logistica
+    username: utn
+    password: utn123
+
+  cloud:
+    gateway:
+      # Forward the Authorization header to downstream services
+      default-filters:
+        - AddRequestHeader=Authorization, "#{request.headers.Authorization[0]}"
+
+      routes:
+        - id: contenedores-route
+          uri: http://ms-contenedores:8081
+          predicates:
+            - Path=/contenedores/**
+          filters:
+            - name: RewritePath
+              args:
+                regexp: /contenedores(?<segment>/.*)?
+                replacement: /api/contenedores${segment}
+
+        - id: solicitudes-route
+          uri: http://ms-contenedores:8081
+          predicates:
+            - Path=/solicitudes/**
+          filters:
+            - name: RewritePath
+              args:
+                regexp: /solicitudes(?<segment>/.*)?
+                replacement: /api/solicitudes${segment}
+
+        - id: transportes-route
+          uri: http://ms-transporte:8082
+          predicates:
+            - Path=/camiones/**
+          filters:
+            - name: RewritePath
+              args:
+                regexp: /camiones(?<segment>/.*)?
+                replacement: /api/camiones${segment}
+
+        - id: tramos-route
+          uri: http://ms-transporte:8082
+          predicates:
+            - Path=/tramos/**
+          filters:
+            - name: RewritePath
+              args:
+                regexp: /tramos(?<segment>/.*)?
+                replacement: /api/tramos${segment}
+
+        - id: rutas-route
+          uri: http://ms-transporte:8082
+          predicates:
+            - Path=/rutas/**
+          filters:
+            - name: RewritePath
+              args:
+                regexp: /rutas(?<segment>/.*)?
+                replacement: /api/rutas${segment}
+
+        - id: depositos-route
+          uri: http://ms-transporte:8082
+          predicates:
+            - Path=/depositos/**
+          filters:
+            - name: RewritePath
+              args:
+                regexp: /depositos(?<segment>/.*)?
+                replacement: /api/depositos${segment}
+
+        - id: puntos-route
+          uri: http://ms-transporte:8082
+          predicates:
+            - Path=/puntos/**
+          filters:
+            - name: RewritePath
+              args:
+                regexp: /puntos(?<segment>/.*)?
+                replacement: /api/puntos${segment}
+
+        - id: usuarios-route
+          uri: http://ms-usuarios:8083
+          predicates:
+            - Path=/usuarios/**
+          filters:
+            - name: RewritePath
+              args:
+                regexp: /usuarios(?<segment>/.*)?
+                replacement: /api/usuarios${segment}
+
+        - id: clientes-route
+          uri: http://ms-usuarios:8083
+          predicates:
+            - Path=/clientes/**
+          filters:
+            - name: RewritePath
+              args:
+                regexp: /clientes(?<segment>/.*)?
+                replacement: /api/clientes${segment}
+
+        - id: transportistas-route
+          uri: http://ms-usuarios:8083
+          predicates:
+            - Path=/transportistas/**
+          filters:
+            - name: RewritePath
+              args:
+                regexp: /transportistas(?<segment>/.*)?
+                replacement: /api/transportistas${segment}
+
+        - id: tarifas-route
+          uri: http://ms-tarifas:8084
+          predicates:
+            - Path=/tarifas/**
+          filters:
+            - name: RewritePath
+              args:
+                regexp: /tarifas(?<segment>/.*)?
+                replacement: /api/tarifas${segment}
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://keycloak:8080/realms/tpi-backend
