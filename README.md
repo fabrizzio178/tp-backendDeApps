@@ -13,77 +13,12 @@ Sistema de logística basado en microservicios desplegado con Docker Compose. Im
 - **Keycloak**: Autenticación OAuth2/JWT (puerto 8080)
 - **PostgreSQL**: Base de datos (puerto 5450 en host → 5432 en contenedor)
 
----
-
-## Requisitos Previos
-
-- Docker y Docker Compose instalados
-- Bash (para scripts auxiliares)
-- `jq` para parsear JSON (opcional pero recomendado)
-- Acceso a: `C:\Users\tomas\UTN\Tercer año\Backend de Aplicaciones\TP\tpi final\tpi-backend`
-
----
 
 ## Inicio Rápido
 
 ### 1. Iniciar todos los servicios
 
-```bash
-cd "c:/Users/tomas/UTN/Tercer año/Backend de Aplicaciones/TP/tpi final/tpi-backend/logistica-db"
-docker-compose up --build
-```
-
 **Tiempo esperado**: ~2-3 minutos (primera ejecución)
-
-**Verificar estado**:
-```bash
-docker-compose ps
-docker-compose logs gateway | tail -20
-```
-
-**Señales de éxito**:
-- Todos los contenedores deben estar `Up (running)`
-- Gateway mostrará: `Tomcat started on port(s): 8087`
-- Keycloak mostrará: `Realm 'tpi-backend' imported`
-
----
-
-## Usuarios y Credenciales
-
-| Rol | Username | Contraseña | Permisos |
-|-----|----------|------------|----------|
-| **ADMIN** | tinchoadmin | tincho123 | Todos (ADMIN, OPERADOR, TRANSPORTISTA, CLIENTE) |
-| **OPERADOR** | operador | operador123 | Gestión de rutas, tarifas, asignaciones |
-| **CLIENTE** | cliente | cliente123 | Crear solicitudes, consultar estado |
-| **TRANSPORTISTA** | transportista | transportista123 | Iniciar/finalizar tramos |
-
----
-
-## Autenticación: Obtener Token JWT
-
-```bash
-# 1. Obtener token como usuario "tinchoadmin"
-TOKEN=$(curl -s -X POST "http://localhost:8080/realms/tpi-backend/protocol/openid-connect/token" \
-  -H "Content-Type: application/x-www-form-urlencoded" \
-  -d "grant_type=password" \
-  -d "client_id=ms-usuarios" \
-  -d "username=tinchoadmin" \
-  -d "password=tincho123" \
-  -d "client_secret=R7vmLnCGKylgg2pkLsKuZXw7OmV1vYHh" | jq -r '.access_token')
-
-echo "Token obtenido:"
-echo "$TOKEN"
-
-# 2. Guardar en variable para usar en requests posteriores
-export TOKEN="$TOKEN"
-```
-
-**Validar token**:
-```bash
-curl -s -H "Authorization: Bearer $TOKEN" http://localhost:8087/solicitudes | jq '.'
-```
-
----
 
 # FLUJO COMPLETO DE ENDPOINTS
 
@@ -1135,4 +1070,4 @@ curl -s -H "Authorization: Bearer $TOKEN" "http://localhost:8087/clientes" | jq 
 
 **Versión**: 2.0  
 **Fecha**: 17 de Noviembre, 2025  
-**Implementación Completa**: ✓ Todos los requerimientos funcionales mínimos
+**Implementación Completa**: ✓ Todos los requerimientos funcionales listos.
